@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="false" debug="false">
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%date %-5level[%thread]%logger{56}:%L-%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <substitutionProperty name="log.base" value="${LOG_PATH}"/>
+
+    <!-- base日志文件配置 -->
+    <appender name="baseRollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.base}/cms-base.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${log.base}/cms-base.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <MaxHistory>10</MaxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 100MB -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%date %-5level[%thread]%logger{56}:%L-%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Error级别日志文件配置 -->
+    <appender name="errorRollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.base}/cms-error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${log.base}/cms-error.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <MaxHistory>10</MaxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 100MB -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%date %-5level[%thread]%logger{56}:%L-%msg%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="requestInfo" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.base}/cms-request.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base}/cms-request.%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%date %-5level[%thread]%logger{56}:%L-%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.sunlands.dragnet.common.log.RequestStatLog" level="INFO" additivity="false">
+        <appender-ref ref="requestInfo"/>
+    </logger>
+
+    <logger name="com.sunlands.dragnet.cms" level="DEBUG" additivity="true">
+        <appender-ref ref="baseRollingFile"/>
+        <appender-ref ref="errorRollingFile"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="stdout"/>
+    </root>
+</configuration>
